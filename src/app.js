@@ -5,9 +5,9 @@ const authRoutes = require("./routes/auth");
 const { sequelize } = require("./models");
 const { port } = require("./config/config");
 const passport = require("passport");
+const { isAuthenticated } = require("./middleware/passport.middleware");
 
-// initalize sequelize with session store
-var SequelizeStore = require("connect-session-sequelize")(session.Store);
+var SequelizeStore = require("connect-session-sequelize")(session.Store); // initalize sequelize with session store
 
 /**
  * -------------- GENERAL SETUP ----------------
@@ -50,6 +50,7 @@ require("./config/passport.config");
 app.use(passport.initialize());
 app.use(passport.session());
 
+/** for debugging the session */
 app.use((req, res, next) => {
   console.log(req.session);
   console.log(req.user);
@@ -61,7 +62,7 @@ app.use((req, res, next) => {
  */
 
 // view routes for testing
-app.get("/", (req, res) => {
+app.get("/", isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../src/views/index.html"));
 });
 app.get("/login", (req, res) => {

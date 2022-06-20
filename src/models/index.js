@@ -12,10 +12,6 @@ const sequelize = new Sequelize(
   dbConfig.options
 );
 
-// select all the files that is not equal to index.js we all want all the model file
-// for every file we found we need to declare a model
-// create a table if it doesn't exist
-
 //= ==============================
 // Generate all models
 //= ==============================

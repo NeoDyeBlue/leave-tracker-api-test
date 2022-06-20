@@ -1,6 +1,14 @@
 const { User } = require("../../models");
 const { comparePassword } = require("../../utils");
 
+/**
+ *
+ * @param {string} fullName
+ * @param {string} email
+ * @param {string} password
+ * @desc registers user
+ */
+
 async function register(fullName, email, password) {
   try {
     const userExists = await User.findOne({ where: { email } });

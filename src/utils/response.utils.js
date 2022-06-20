@@ -1,3 +1,13 @@
+/**
+ *
+ * @param {Object} req - request object
+ * @param {Object} res - response object
+ * @param {string} errorMessage
+ * @param {number} code - HTTP response status code
+ * @param {Object} error - error object
+ * @desc Sends an error response
+ */
+
 function errorResponse(
   req,
   res,
@@ -13,6 +23,14 @@ function errorResponse(
     success: false,
   });
 }
+
+/**
+ *
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} data
+ * @param {number} code
+ */
 
 function successResponse(req, res, data, code = 200) {
   res.send({
