@@ -5,7 +5,6 @@ const authRoutes = require("./routes/auth");
 const { sequelize } = require("./models");
 const { port } = require("./config/config");
 const passport = require("passport");
-const { isAuthenticated } = require("./middleware/passport.middleware");
 
 var SequelizeStore = require("connect-session-sequelize")(session.Store); // initalize sequelize with session store
 
@@ -62,19 +61,37 @@ app.use((req, res, next) => {
  */
 
 // view routes for testing
-app.get("/", isAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/views/index.html"));
+app.get("/", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.sendFile(path.join(__dirname, "../src/views/index.html"));
+  } else {
+    res.redirect("/login");
+  }
 });
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/views/login.html"));
+  if (req.isAuthenticated()) {
+    res.redirect("/");
+  } else {
+    res.sendFile(path.join(__dirname, "../src/views/login.html"));
+  }
 });
 app.get("/signup", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/views/signup.html"));
+  if (req.isAuthenticated()) {
+    res.redirect("/");
+  } else {
+    res.sendFile(path.join(__dirname, "../src/views/signup.html"));
+  }
 });
 app.get("/resetpassword", (req, res) => {
   res.sendFile(path.join(__dirname, "../src/views/reset-password.html"));
 });
+app.get("/logout", (req, res) => {
+  req.logout(function (error) {
+    res.redirect("/login");
+  });
+});
 
+//api routes
 app.use("/auth", authRoutes); // auth routes for login, signup, reset pass, and 3rd party auth
 
 /**
