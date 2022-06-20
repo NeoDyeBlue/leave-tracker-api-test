@@ -35,10 +35,19 @@ const strategy = new LocalStrategy(customFields, verifyCallback);
 
 passport.use(strategy);
 
+/**
+ * persist user data (after successful authentication) into session
+ * @see {@link https://stackoverflow.com/q/27637609 | Understanding passport serialize deserialize}
+ */
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
+/**
+ * used to retrieve user data from session
+ * @see {@link https://stackoverflow.com/q/27637609 | Understanding passport serialize deserialize}
+ */
 passport.deserializeUser(async (userId, done) => {
   try {
     const user = await findUserByPk(userId);

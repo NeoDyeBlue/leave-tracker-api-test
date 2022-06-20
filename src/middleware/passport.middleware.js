@@ -3,8 +3,8 @@ const { successResponse, errorResponse } = require("../utils/response.utils");
 
 /**
  * Middleware function to authenticate the user locally and sends a json response instead of just status 401.
- * @see {@link https://stackoverflow.com/q/24382296|how to send json as a response after passport authenticationin node.js}
- * @see {@link https://stackoverflow.com/q/49030707|how to send json data under passport local strategy}
+ * @see {@link https://stackoverflow.com/q/24382296 | how to send json as a response after passport authenticationin node.js}
+ * @see {@link https://stackoverflow.com/q/49030707 | how to send json data under passport local strategy}
  * @returns Sends a json success/error response
  */
 
