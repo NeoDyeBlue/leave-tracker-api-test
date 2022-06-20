@@ -1,6 +1,11 @@
 const UserService = require("../../services/user/user.service");
 const { errorResponse, successResponse } = require("../../utils");
 
+/**
+ * Register controller for user
+ * @returns Will return a succes or error json response
+ */
+
 async function register(req, res) {
   const { fullName, email, password } = req.body;
   try {

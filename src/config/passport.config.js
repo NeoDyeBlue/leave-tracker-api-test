@@ -1,6 +1,6 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const { User } = require("../models");
+const { findOneUser, findUserByPk } = require("../services/user/user.service");
 const { comparePassword } = require("../utils");
 
 const customFields = { usernameField: "email" }; //tell passport that the username is the email field
@@ -8,11 +8,11 @@ const customFields = { usernameField: "email" }; //tell passport that the userna
 const verifyCallback = async (username, password, done) => {
   console.log(username, password);
   try {
-    const user = await User.findOne({ where: { email: username } });
+    const user = await findOneUser({ email: username });
 
     if (!user) {
       return done(null, false, {
-        error: "email",
+        error: "EmailNotFound",
         message: "email/user is not found",
       });
     }
@@ -23,7 +23,7 @@ const verifyCallback = async (username, password, done) => {
       return done(null, user);
     } else {
       return done(null, false, {
-        error: "password",
+        error: "PasswordIncorrect",
         message: "incorrect password",
       });
     }
@@ -41,7 +41,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (userId, done) => {
   try {
-    const user = await User.findByPk(userId);
+    const user = await findUserByPk(userId);
     done(null, { id: user.id, email: user.email, name: user.fullName });
   } catch (err) {
     done(error);
