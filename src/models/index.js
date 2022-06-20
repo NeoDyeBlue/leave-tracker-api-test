@@ -1,15 +1,15 @@
 const fs = require("fs"); //include filesystem
 const path = require("path"); //use for dealing relative paths absolute paths
 const Sequelize = require("sequelize");
-const config = require("../config");
+const dbConfig = require("../config/sequelize.config");
 const db = {};
 
 // declare sequelize object
 const sequelize = new Sequelize(
-  config.db.database,
-  config.db.user,
-  config.db.password,
-  config.db.options
+  dbConfig.database,
+  dbConfig.user,
+  dbConfig.password,
+  dbConfig.options
 );
 
 // select all the files that is not equal to index.js we all want all the model file
