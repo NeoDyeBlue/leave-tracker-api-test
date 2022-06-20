@@ -1,11 +1,10 @@
 /**
- *
+ * Sends an error response in json format
  * @param {Object} req - request object
  * @param {Object} res - response object
  * @param {string} errorMessage
  * @param {number} code - HTTP response status code
  * @param {Object} error - error object
- * @desc Sends an error response
  */
 
 function errorResponse(
@@ -25,7 +24,7 @@ function errorResponse(
 }
 
 /**
- *
+ * Sends a success response in json format
  * @param {Object} req
  * @param {Object} res
  * @param {Object} data

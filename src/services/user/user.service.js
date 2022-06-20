@@ -25,9 +25,9 @@ async function register(fullName, email, password) {
 async function login(email, password) {}
 
 /**
- * Returns a user data based on the specified properties
+ * Returns a user object based on the specified properties
  * @param {Object} properties
- * @returns {Object} User data
+ * @returns {Object} User object
  * @throws Throws an error back caused by any reasons
  */
 
@@ -41,9 +41,9 @@ async function findOneUser(properties) {
 }
 
 /**
- * Returns a user data based on the primary key
+ * Returns a user object based on the primary key
  * @param {(string|number)} primaryKey
- * @returns {Object} User data
+ * @returns {Object} User object
  * @throws Throws an error back caused by any reasons
  */
 
