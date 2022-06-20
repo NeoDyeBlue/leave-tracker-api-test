@@ -1,9 +1,9 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const { User } = require("../models");
-const comparePassword = require("../utils");
+const { comparePassword } = require("../utils");
 
-const customFields = { username: "email" }; //tell passport that the username field is the email field
+const customFields = { usernameField: "email" }; //tell passport that the username field is the email field
 const verifyCallback = async (username, password, done) => {
   console.log(username, password);
   try {
@@ -34,8 +34,8 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (userId, done) => {
   try {
-    const user = await User.findById(userId);
-    done(null, user);
+    const user = await User.findByPk(userId);
+    done(null, { id: user.id, email: user.email, name: user.fullName });
   } catch (err) {
     done(error);
   }
