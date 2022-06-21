@@ -1,9 +1,13 @@
-const { hashPassword, comparePassword } = require("./password.utils");
-const { successResponse, errorResponse } = require("./response.utils");
+const issueJwt = require("./jwt.util");
+const passwordUtils = require("./password.utils");
+const responseUtils = require("./response.utils");
+
+/**
+ * (...) syntax spreads the other utility objects for export
+ */
 
 module.exports = {
-  hashPassword,
-  comparePassword,
-  successResponse,
-  errorResponse,
+  issueJwt,
+  ...passwordUtils,
+  ...responseUtils,
 };

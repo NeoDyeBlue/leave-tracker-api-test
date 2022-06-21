@@ -1,58 +1,48 @@
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-const { findOneUser, findUserByPk } = require("../services/user/user.service");
-const { comparePassword } = require("../utils");
+const path = require("path");
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
+const { findUserByPk } = require("../services/user/user.service");
 
-const customFields = { usernameField: "email" }; //tell passport that the username is the email field
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
-const verifyCallback = async (username, password, done) => {
-  console.log(username, password);
+/**
+ * Gets the jsonwebtoken from cookies
+ * @param {*} req
+ * @returns JWT
+ */
+
+const cookieExtractor = (req) => {
+  let jwt = null;
+
+  if (req && req.cookies) {
+    jwt = req.cookies["jwt"];
+  }
+
+  return jwt;
+};
+
+const options = {
+  jwtFromRequest: cookieExtractor, // ExtractJwt.fromAuthHeaderAsBearerToken() // --> from auth header as bearer
+  secretOrKey: process.env.JWT_SECRET,
+};
+
+const verifyCallback = async (payload, done) => {
   try {
-    const user = await findOneUser({ email: username });
+    const user = await findUserByPk(payload.sub);
 
-    if (!user) {
-      return done(null, false, {
-        error: "EmailNotFound",
-        message: "email/user is not found",
-      });
+    if (user) {
+      return done(null, { sub: user.id, name: user.fullName });
     }
 
-    const isValid = await comparePassword(password, user.password); // checks if password is valid
-
-    if (isValid) {
-      return done(null, user);
-    } else {
-      return done(null, false, {
-        error: "PasswordIncorrect",
-        message: "incorrect password",
-      });
-    }
+    return done(null, false);
   } catch (error) {
-    done(error);
+    done(error, null);
   }
 };
-const strategy = new LocalStrategy(customFields, verifyCallback);
 
-passport.use(strategy);
+const strategy = new JwtStrategy(options, verifyCallback);
 
-/**
- * persist user data (after successful authentication) into session
- * @see {@link https://stackoverflow.com/q/27637609 | Understanding passport serialize deserialize}
- */
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-/**
- * used to retrieve user data from session
- * @see {@link https://stackoverflow.com/q/27637609 | Understanding passport serialize deserialize}
- */
-passport.deserializeUser(async (userId, done) => {
-  try {
-    const user = await findUserByPk(userId);
-    done(null, { id: user.id, email: user.email, name: user.fullName });
-  } catch (err) {
-    done(error);
-  }
-});
+//takes the passport library imported from app.js
+module.exports = (passport) => {
+  passport.use(strategy);
+};

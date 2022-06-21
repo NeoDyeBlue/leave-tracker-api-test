@@ -39,4 +39,17 @@ function successResponse(req, res, data, code = 200) {
   });
 }
 
-module.exports = { errorResponse, successResponse };
+/**
+ * Sets a cookie for the client
+ * @param {*} req
+ * @param {*} res
+ * @param {String} name - the name of the cookie
+ * @param {*} payload - the content of the cookie
+ * @param {Object} options - cookie options
+ */
+
+function setCookie(req, res, name, payload, options = {}) {
+  res.cookie(name, payload, options);
+}
+
+module.exports = { errorResponse, successResponse, setCookie };

@@ -1,5 +1,10 @@
 const UserService = require("../../services/user/user.service");
-const { errorResponse, successResponse } = require("../../utils");
+const {
+  issueJwt,
+  errorResponse,
+  successResponse,
+  setCookie,
+} = require("../../utils");
 
 /**
  * Register controller for user
@@ -9,12 +14,49 @@ const { errorResponse, successResponse } = require("../../utils");
 async function register(req, res) {
   const { fullName, email, password } = req.body;
   try {
-    await UserService.register(fullName, email, password);
-    return successResponse(req, res, {});
+    const user = await UserService.register(fullName, email, password);
+    const jwt = issueJwt(user);
+
+    // remove set cookie if localStorage is preffered
+
+    setCookie(req, res, "jwt", jwt.cookie.token, {
+      httpOnly: true,
+      secure: false, // --> set secure to true in production
+    });
+
+    return successResponse(req, res, {
+      user: { id: user.id, name: user.fullName },
+      // // Uncomment this part if token should be included in the json response
+      // token: jwt.local.token,
+      // expiresIn: jwt.local.expires,
+    });
   } catch (error) {
-    console.log(error);
     return errorResponse(req, res, error.message, 400);
   }
 }
 
-module.exports = { register };
+async function login(req, res) {
+  const { email, password } = req.body;
+  try {
+    const user = await UserService.login(email, password);
+    const jwt = issueJwt(user);
+
+    // remove set cookie if localStorage is preffered
+
+    setCookie(req, res, "jwt", jwt.cookie.token, {
+      httpOnly: true,
+      secure: false, // --> set secure to true in production
+    });
+
+    return successResponse(req, res, {
+      user: { id: user.id, name: user.fullName },
+      // // Uncomment this part if token should be included in the json response
+      // token: jwt.local.token,
+      // expiresIn: jwt.local.expires,
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message, 400);
+  }
+}
+
+module.exports = { register, login };
