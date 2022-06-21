@@ -1,5 +1,6 @@
 const jsonwebtoken = require("jsonwebtoken");
 const path = require("path");
+const { cookieMaxAge } = require("../config/config");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 /**
@@ -9,7 +10,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
  */
 
 function issueJwt(user) {
-  const EXPIRES_IN = "1d"; // 1 day;
+  const EXPIRES_IN = cookieMaxAge;
   const payload = {
     sub: user.id,
     name: user.fullName,

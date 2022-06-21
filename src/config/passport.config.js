@@ -1,3 +1,11 @@
+/**
+ * This passport configuration uses the jwt and google strategies.
+ *
+ * By using jwt, we don't need express-session anymore to store sessions.
+ *
+ * @see {@link https://www.sitepoint.com/spa-social-login-google-facebook/ | Add Social Login via Google & Facebook to Your Single-page App}
+ */
+
 const path = require("path");
 const JwtStrategy = require("passport-jwt").Strategy;
 const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
