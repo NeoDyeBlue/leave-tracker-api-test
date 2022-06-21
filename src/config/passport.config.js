@@ -1,14 +1,18 @@
 const path = require("path");
 const JwtStrategy = require("passport-jwt").Strategy;
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const { findUserByPk } = require("../services/user/user.service");
+const {
+  findUserByPk,
+  findUpdateOrCreateUser,
+} = require("../services/user/user.service");
 
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 /**
  * Gets the jsonwebtoken from cookies
  * @param {*} req
- * @returns JWT
+ * @returns JWT - the token from the cookie
  */
 
 const cookieExtractor = (req) => {
@@ -21,28 +25,64 @@ const cookieExtractor = (req) => {
   return jwt;
 };
 
-const options = {
-  jwtFromRequest: cookieExtractor, // ExtractJwt.fromAuthHeaderAsBearerToken() // --> from auth header as bearer
-  secretOrKey: process.env.JWT_SECRET,
-};
+/**
+ * -------------- DEFINE STRATEGIES ----------------
+ */
 
-const verifyCallback = async (payload, done) => {
-  try {
-    const user = await findUserByPk(payload.sub);
+/**
+ * JWT strategy
+ */
 
-    if (user) {
-      return done(null, { sub: user.id, name: user.fullName });
+const jwtStrategy = new JwtStrategy(
+  {
+    jwtFromRequest: cookieExtractor, // ExtractJwt.fromAuthHeaderAsBearerToken() // --> from auth header as bearer
+    secretOrKey: process.env.JWT_SECRET,
+  },
+  async (payload, done) => {
+    try {
+      const user = await findUserByPk(payload.sub);
+      console.log("payload", payload);
+      if (user) {
+        return done(
+          null,
+          { id: user.id, name: user.fullName, email: user.email },
+          payload
+        );
+      }
+
+      return done(null, false);
+    } catch (error) {
+      done(error, null);
     }
-
-    return done(null, false);
-  } catch (error) {
-    done(error, null);
   }
-};
+);
 
-const strategy = new JwtStrategy(options, verifyCallback);
+/**
+ * Google strategy
+ */
 
-//takes the passport library imported from app.js
+const googleStrategy = new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/auth/google/callback",
+    // passReqToCallback: true,
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const user = await findUpdateOrCreateUser(profile);
+      return done(null, { id: user.id, fullName: user.fullName });
+    } catch (error) {
+      done(error, null);
+    }
+  }
+);
+
+/**
+ *
+ * @param {*} passport takes the passport library imported from app.js
+ */
 module.exports = (passport) => {
-  passport.use(strategy);
+  passport.use(jwtStrategy);
+  passport.use(googleStrategy);
 };

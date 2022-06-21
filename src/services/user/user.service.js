@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { User, Op } = require("../../models");
 const { comparePassword } = require("../../utils");
 
 /**
@@ -75,9 +75,44 @@ async function findOneUser(properties) {
  */
 
 async function findUserByPk(primaryKey) {
-  console.log(primaryKey);
   try {
     const user = await User.findByPk(primaryKey);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * For third party authentication only and should not be used on email & password login/register
+ * @param {Object} profile
+ * @returns {Object} - Contains the user object
+ */
+
+async function findUpdateOrCreateUser(profile) {
+  try {
+    const user = await User.findOne({
+      where: { email: profile.emails[0].value },
+    });
+    if (user && !user.socialId) {
+      const result = await User.update(
+        {
+          socialId: profile.id,
+          provider: profile.provider,
+        },
+        { where: { id: user.id }, returning: true, plain: true }
+      );
+      return (updateduser = result[1].dataValues);
+    } else if (!user) {
+      const newUser = await User.create({
+        email: profile.emails[0].value,
+        fullName: `${profile.name.givenName} ${profile.name.familyName}`,
+        socialId: profile.id,
+        provider: profile.provider,
+      });
+
+      return newUser;
+    }
     return user;
   } catch (error) {
     throw error;
@@ -89,4 +124,5 @@ module.exports = {
   login,
   findOneUser,
   findUserByPk,
+  findUpdateOrCreateUser,
 };

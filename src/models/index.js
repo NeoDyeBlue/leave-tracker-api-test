@@ -1,6 +1,6 @@
 const fs = require("fs"); //include filesystem
 const path = require("path"); //use for dealing relative paths absolute paths
-const Sequelize = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const dbConfig = require("../config/sequelize.config");
 const db = {};
 
@@ -27,6 +27,7 @@ fs.readdirSync(__dirname)
 
 db.sequelize = sequelize;
 db.Sequelize = sequelize;
+db.Op = Op;
 
 // relationships for models
 

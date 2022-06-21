@@ -59,4 +59,21 @@ async function login(req, res) {
   }
 }
 
-module.exports = { register, login };
+/**
+ * Generates a jwt cookie to be sent to client. Only used for a successfull third party auth.
+ * @param {*} req
+ * @param {*} res
+ */
+
+async function generateCookieToken(req, res) {
+  const jwt = issueJwt(req.user);
+
+  setCookie(req, res, "jwt", jwt.cookie.token, {
+    httpOnly: true,
+    secure: false, // --> set secure to true in production
+  });
+
+  res.redirect("/");
+}
+
+module.exports = { register, login, generateCookieToken };
