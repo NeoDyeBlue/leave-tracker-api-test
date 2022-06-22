@@ -11,7 +11,7 @@ const { viewAuthenticate } = require("./middleware/passport.middleware");
  * -------------- GENERAL SETUP ----------------
  */
 
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") }); //for using the .env file
+require("dotenv").config(); //for using the .env file
 
 const app = express();
 

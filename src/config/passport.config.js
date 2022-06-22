@@ -15,7 +15,7 @@ const {
   findUpdateOrCreateUser,
 } = require("../services/user/user.service");
 
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("dotenv").config();
 
 /**
  * Gets the jsonwebtoken from cookies
