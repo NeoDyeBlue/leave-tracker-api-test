@@ -49,7 +49,6 @@ const jwtStrategy = new JwtStrategy(
   async (payload, done) => {
     try {
       const user = await findUserByPk(payload.sub);
-      console.log("payload", payload);
       if (user) {
         return done(
           null,

@@ -24,7 +24,6 @@ router.get(
 );
 
 router.get("/protected", PassportMiddleware.authenticate, (req, res) => {
-  console.log(req.user);
   res
     .status(200)
     .json({ message: `Welcome to protected route ${req.user.name}` });
