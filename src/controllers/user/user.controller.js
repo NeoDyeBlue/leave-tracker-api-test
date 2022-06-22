@@ -66,6 +66,7 @@ async function login(req, res) {
  */
 
 async function generateCookieToken(req, res) {
+  console.log(req.user);
   const jwt = issueJwt(req.user);
 
   setCookie(req, res, "jwt", jwt.cookie.token, {
